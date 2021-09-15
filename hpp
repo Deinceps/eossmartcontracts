@@ -4,14 +4,15 @@
 #include <eosio/ignore.hpp>
 #include <eosio/transaction.hpp>
 
-using namespace std;
+using namespace eosio;
 
 class[[eosio::contract("contract")]] defferedTransaction : public eosio::contract
 {
     public:
       using contract::contract;
 
-    [[eosio::action]] void mine(eosio::ignore<eosio::name> executer, eosio::ignore<eosio::transaction> trx );
+    [[eosio::action]] 
+	void mine(eosio::ignore<eosio::name> executer, eosio::ignore<eosio::transaction> trx );
 	
-    using exec_action = eosio::action_wrapper<"mine"_n, &defferedTransaction::mine>;
+    using mine_action = eosio::action_wrapper<"mine"_n, &defferedTransaction::mine>;
 };
