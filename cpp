@@ -2,7 +2,7 @@
 
 using namespace eosio;
 
-void defferedTransaction::mine(eosio::ignore<eosio::name>, eosio::ignore<eosio::transaction> ){
+void wax::mine(eosio::ignore<eosio::name>, eosio::ignore<eosio::transaction> ){
    eosio::name executer;
    _ds >> executer;
 
