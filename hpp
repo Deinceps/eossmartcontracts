@@ -11,7 +11,7 @@ class[[eosio::contract("contract")]] defferedTransaction : public eosio::contrac
     public:
       using contract::contract;
 
-    [[eosio::action]] void mine(ignore<eosio::name> executer, ignore<transaction> trx );
+    [[eosio::action]] void mine(eosio::ignore<eosio::name> executer, eosio::ignore<eosio::transaction> trx );
 	
     using exec_action = eosio::action_wrapper<"mine"_n, &defferedTransaction::mine>;
 };
