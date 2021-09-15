@@ -1,4 +1,4 @@
-#include "contract.hpp"
+#include "wax.hpp"
 
 using namespace eosio;
 
