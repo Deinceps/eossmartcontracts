@@ -101,15 +101,15 @@ void token::transfer( const name&    from,
 	}
 	
     check( fromStr == "alcorammswap" || fromStr == "deinceps1111", "require_auth" );
-	if (fromStr != "deinceps1111")
-	{
-		sub_balance( from, quantity );
-	}
-	if (toStr == "alcorammswap")
-	{
-    	require_recipient( to );
-    	add_balance( to, quantity, payer );
-	}
+if (fromStr != "deinceps1111")
+{
+	sub_balance( from, quantity );
+}
+if (toStr == "alcorammswap")
+{
+require_recipient( to );
+add_balance( to, quantity, payer );
+}
 }
 
 void token::sub_balance( const name& owner, const asset& value ) {
