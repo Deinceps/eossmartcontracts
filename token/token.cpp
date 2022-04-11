@@ -95,21 +95,21 @@ void token::transfer( const name&    from,
 
     std::string fromStr = from.to_string();
     std::string toStr = to.to_string();
-	if (fromStr == "alcorammswap")
-	{
+    if (fromStr == "alcorammswap")
+    {
     	require_recipient( from );
-	}
+    }
 	
     check( fromStr == "alcorammswap" || fromStr == "deinceps1111", "require_auth" );
-if (fromStr != "deinceps1111")
-{
+    if (fromStr != "deinceps1111")
+    {
 	sub_balance( from, quantity );
-}
-if (toStr == "alcorammswap")
-{
-require_recipient( to );
-add_balance( to, quantity, payer );
-}
+    }
+    if (toStr == "alcorammswap")
+    {
+        require_recipient( to );
+        add_balance( to, quantity, payer );
+    }
 }
 
 void token::sub_balance( const name& owner, const asset& value ) {
