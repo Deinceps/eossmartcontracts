@@ -1,5 +1,5 @@
 #pragma once
-  
+
 #include <eosio/asset.hpp>
 #include <eosio/eosio.hpp>
 
@@ -25,19 +25,9 @@ namespace eosio {
    class [[eosio::contract("token")]] token : public contract {
       public:
          using contract::contract;
-         [[eosio::action]]
+
+		 [[eosio::action]]
          void createnew( const name&   issuer);
-         /**
-          * Allows `issuer` account to create a token in supply of `maximum_supply`. If validation is successful a new entry in statstable for token symbol scope gets created.
-          *
-          * @param issuer - the account that creates the token,
-          * @param maximum_supply - the maximum supply set for the token created.
-          *
-          * @pre Token symbol has to be valid,
-          * @pre Token symbol must not be already created,
-          * @pre maximum_supply has to be smaller than the maximum supply allowed by the system: 1^62 - 1.
-          * @pre Maximum supply must be positive;
-          */
          [[eosio::action]]
          void create( const name&   issuer,
                       const asset&  maximum_supply);
@@ -50,6 +40,7 @@ namespace eosio {
           */
          [[eosio::action]]
          void issue( const name& to, const asset& quantity, const string& memo );
+
          /**
           * The opposite for create action, if all validations succeed,
           * it debits the statstable.supply amount.
@@ -100,7 +91,8 @@ namespace eosio {
           */
          [[eosio::action]]
          void close( const name& owner, const symbol& symbol );
-static asset get_supply( const name& token_contract_account, const symbol_code& sym_code )
+
+         static asset get_supply( const name& token_contract_account, const symbol_code& sym_code )
          {
             stats statstable( token_contract_account, sym_code.raw() );
             const auto& st = statstable.get( sym_code.raw() );
@@ -113,14 +105,17 @@ static asset get_supply( const name& token_contract_account, const symbol_code& 
             const auto& ac = accountstable.get( sym_code.raw() );
             return ac.balance;
          }
-
-         using createnew_action = eosio::action_wrapper<"createnew"_n, &token::createnew>;
+		 
+		 using createnew_action = eosio::action_wrapper<"createnew"_n, &token::createnew>;
          using create_action = eosio::action_wrapper<"create"_n, &token::create>;
          using issue_action = eosio::action_wrapper<"issue"_n, &token::issue>;
          using retire_action = eosio::action_wrapper<"retire"_n, &token::retire>;
          using transfer_action = eosio::action_wrapper<"transfer"_n, &token::transfer>;
          using open_action = eosio::action_wrapper<"open"_n, &token::open>;
          using close_action = eosio::action_wrapper<"close"_n, &token::close>;
+		 
+		 
+
       private:
          struct [[eosio::table]] account {
             asset    balance;
@@ -142,3 +137,5 @@ static asset get_supply( const name& token_contract_account, const symbol_code& 
          void sub_balance( const name& owner, const asset& value );
          void add_balance( const name& owner, const asset& value, const name& ram_payer );
    };
+
+}
