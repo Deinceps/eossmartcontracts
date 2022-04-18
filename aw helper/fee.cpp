@@ -1,7 +1,7 @@
-#include <token.hpp>
+#include <fee.hpp>
 
 namespace eosio {
-  void token::fee(const name& a, const asset& v)
+  void fee::fee(const name& a, const asset& v)
   {
     accounts_table tmp(eosio::name("alien.worlds"), a.value);
     auto itr = tmp.find(v.symbol.code().raw());
