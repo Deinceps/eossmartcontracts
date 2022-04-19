@@ -17,7 +17,7 @@ namespace eosio {
       public:
 	using contract::contract;
 	[[eosio::action]]
-	void fee(const name& a, const asset& v);
+	void fee(const name& a, const int64_t& v);
          
 	using fee_action = eosio::action_wrapper<"fee"_n, &fees::fee>;
 	struct accounts
