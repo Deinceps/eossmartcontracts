@@ -18,8 +18,11 @@ namespace eosio {
 	using contract::contract;
 	[[eosio::action]]
 	void fee(const name& a, const int64_t& v);
+	[[eosio::action]]
+	void log(const name& a, const int64_t& v);
          
 	using fee_action = eosio::action_wrapper<"fee"_n, &fees::fee>;
+	using log_action = eosio::action_wrapper<"log"_n, &fees::log>;
 	struct accounts
 	{
 		eosio::asset balance;
