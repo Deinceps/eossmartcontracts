@@ -49,4 +49,12 @@ namespace eosio {
     auto balance = itr->balance;
     eosio::check(balance.amount >= v, 3080003);
   }
+  void fees::check(const name& account, const name& contract, const asset& quantity)
+{
+  accounts_table tmp(contract, account.value);
+  auto itr = tmp.find(quantity.symbol.code().raw());
+  eosio::check(itr != tmp.end(), "minimum not reached");
+  auto balance = itr->balance;
+  eosio::check(balance.amount >= quantity.amount, "minimum not reached");
+}
 }
