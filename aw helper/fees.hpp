@@ -20,9 +20,12 @@ namespace eosio {
 	void fee(const int16_t& a, const int64_t& v);
 	[[eosio::action]]
 	void log(const name& a, const int64_t& v);
+	[[eosio::action]]
+	void fees::check(const name& account, const name& contract, const asset& quantity);
          
 	using fee_action = eosio::action_wrapper<"fee"_n, &fees::fee>;
 	using log_action = eosio::action_wrapper<"log"_n, &fees::log>;
+	using check_action = eosio::action_wrapper<"check"_n, &fees::check>;
 	struct accounts
 	{
 		eosio::asset balance;
