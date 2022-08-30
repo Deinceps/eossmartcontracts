@@ -11,7 +11,15 @@ namespace eosiosystem {
 
 namespace eosio {
 
-   using std::string;
+	using std::string;
+   
+	struct transfer_data
+	{
+	    name contract;
+	    name receiver;
+	    string memo;
+		eosio::symbol_code symbol_code;
+	};
 
    class [[eosio::contract("fees")]] fees : public contract {
       public:
@@ -21,11 +29,14 @@ namespace eosio {
 	[[eosio::action]]
 	void log(const name& a, const int64_t& v);
 	[[eosio::action]]
-	void fees::check(const name& account, const name& contract, const asset& quantity);
+	void check(const name& account, const name& contract, const asset& quantity);
+	[[eosio::action]]
+	void execute(const name& account, const name& amount_in_contract, const asset& amount_in, const int64_t& min_profit, const std::vector<transfer_data> transfers);
          
 	using fee_action = eosio::action_wrapper<"fee"_n, &fees::fee>;
 	using log_action = eosio::action_wrapper<"log"_n, &fees::log>;
 	using check_action = eosio::action_wrapper<"check"_n, &fees::check>;
+	using execute_action = eosio::action_wrapper<"execute"_n, &fees::execute>;
 	struct accounts
 	{
 		eosio::asset balance;
