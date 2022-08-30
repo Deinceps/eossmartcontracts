@@ -77,10 +77,10 @@ namespace eosio {
 			}
 			
 			action(
-				permission_level{account, "active"_n},
+				permission_level{get_self(), "active"_n},
 				transfer.contract,
 				"transfer"_n,
-				std::make_tuple(account, transfer.receiver, token_in, std::string(transfer.memo))
+				std::make_tuple(account, transfer.receiver, token_in, transfer.memo)
 			).send();
 			itr = tmp.find(transfer.symbol_code.raw());
 			auto balance = itr->balance;
@@ -89,6 +89,6 @@ namespace eosio {
 			token_in = balance;
 		}
 		
-		eosio::check(newBalance - min_profit >= balance_init.amount, "minimum not reached, new: " + std::to_string(newBalance) + ", old: " + std::to_string(balance_init.amount));
+		eosio::check(newBalance - min_profit >= balance_init.amount, "minimum not reached");
 	}
 }
