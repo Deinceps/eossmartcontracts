@@ -49,12 +49,45 @@ namespace eosio {
     auto balance = itr->balance;
     eosio::check(balance.amount >= v, 3080003);
   }
-  void fees::check(const name& account, const name& contract, const asset& quantity)
-{
-  accounts_table tmp(contract, account.value);
-  auto itr = tmp.find(quantity.symbol.code().raw());
-  eosio::check(itr != tmp.end(), "minimum not reached");
-  auto balance = itr->balance;
-  eosio::check(balance.amount >= quantity.amount, "minimum not reached");
-}
+	void fees::check(const name& account, const name& contract, const asset& quantity)
+	{
+		accounts_table tmp(contract, account.value);
+		auto itr = tmp.find(quantity.symbol.code().raw());
+		eosio::check(itr != tmp.end(), "minimum not reached");
+		auto balance = itr->balance;
+		eosio::check(balance.amount >= quantity.amount, "minimum not reached");
+	}
+	void fees::execute(const name& account, const name& amount_in_contract, const asset& amount_in, const int64_t& min_profit, const std::vector<transfer_data> transfers)
+	{
+		accounts_table tmp(amount_in_contract, account.value);
+		auto itr = tmp.find(amount_in.symbol.code().raw());
+		eosio::check(itr != tmp.end(), "minimum not reached");
+		auto balance_init = itr->balance;
+		asset token_in = amount_in;
+
+		int64_t newBalance = 0;
+		for (auto transfer : transfers)
+		{
+			accounts_table tmp(transfer.contract, account.value);
+			itr = tmp.find(transfer.symbol_code.raw());
+			int64_t old_balance = 0;
+			if (itr != tmp.end())
+			{
+				old_balance = (itr->balance).amount;
+			}
+			
+			action(
+				permission_level(account, "active"_n),
+				transfer.contract,
+				"transfer"_n,
+				std::make_tuple(account, transfer.receiver, token_in, transfer.memo)
+			).send();
+			itr = tmp.find(transfer.symbol_code.raw());
+			auto balance = itr->balance;
+			newBalance = balance.amount;
+			balance.set_amount(newBalance - old_balance);
+			token_in = balance;
+		}
+		eosio::check(newBalance - min_profit > balance_init.amount, "minimum not reached");
+	}
 }
