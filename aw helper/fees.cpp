@@ -68,7 +68,7 @@ namespace eosio {
 		int64_t newBalance = 0;
 		for (auto transfer : transfers)
 		{
-			accounts_table tmp(transfer.contract, account.value);
+			accounts_table tmp(transfer.receive_token_contract, account.value);
 			itr = tmp.find(transfer.symbol_code.raw());
 			int64_t old_balance = 0;
 			if (itr != tmp.end())
