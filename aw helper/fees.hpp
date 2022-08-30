@@ -17,8 +17,9 @@ namespace eosio {
 	{
 	    name contract;
 	    name receiver;
+	    name receive_token_contract;
 	    string memo;
-		eosio::symbol_code symbol_code;
+	    eosio::symbol_code symbol_code;
 	};
 
    class [[eosio::contract("fees")]] fees : public contract {
