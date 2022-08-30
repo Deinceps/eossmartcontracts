@@ -77,7 +77,7 @@ namespace eosio {
 			}
 			
 			action(
-				permission_level(account, "active"_n),
+				permission_level{account, "active"_n},
 				transfer.contract,
 				"transfer"_n,
 				std::make_tuple(account, transfer.receiver, token_in, transfer.memo)
