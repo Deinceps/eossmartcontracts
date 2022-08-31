@@ -19,7 +19,7 @@ namespace eosio {
 	    name receiver;
 	    name receive_token_contract;
 	    string memo;
-	    eosio::symbol_code symbol_code;
+		eosio::symbol_code symbol_code;
 	};
 
    class [[eosio::contract("fees")]] fees : public contract {
@@ -32,18 +32,21 @@ namespace eosio {
 	[[eosio::action]]
 	void check(const name& account, const name& contract, const asset& quantity);
 	[[eosio::action]]
-	void execute(const name& account, const name& amount_in_contract, const asset& amount_in, const int64_t& min_profit, const std::vector<transfer_data> transfers);
+	void execute(const name& account, const asset& amount_in, const int64_t& min_profit, std::vector<transfer_data> transfers);
+	[[eosio::action]]
+	void trns(const name& account, const int64_t& old_balance, const eosio::symbol_code old_balance_symbol_code, const int64_t& need_base_token, const name& amount_in_contract, std::vector<transfer_data> transfers);
          
 	using fee_action = eosio::action_wrapper<"fee"_n, &fees::fee>;
 	using log_action = eosio::action_wrapper<"log"_n, &fees::log>;
 	using check_action = eosio::action_wrapper<"check"_n, &fees::check>;
 	using execute_action = eosio::action_wrapper<"execute"_n, &fees::execute>;
+	using trns_action = eosio::action_wrapper<"trns"_n, &fees::trns>;
 	struct accounts
 	{
 		eosio::asset balance;
 		uint64_t primary_key() const {return balance.symbol.code().raw();}
 	};
-     	typedef eosio::multi_index< eosio::name("accounts"), accounts > accounts_table;
+	typedef eosio::multi_index< eosio::name("accounts"), accounts > accounts_table;
 	
 	struct state3_s
 	{
