@@ -32,9 +32,9 @@ namespace eosio {
 	[[eosio::action]]
 	void check(const name& account, const name& contract, const asset& quantity);
 	[[eosio::action]]
-	void execute(const name& account, const asset& amount_in, const int64_t& min_profit, std::vector<transfer_data> transfers);
+	void execute(const name& account, const asset& amount_in, const int64_t& min_profit, std::vector<transfer_data>& transfers);
 	[[eosio::action]]
-	void trns(const name& account, const int64_t& old_balance, const eosio::symbol_code old_balance_symbol_code, const int64_t& need_base_token, const name& amount_in_contract, std::vector<transfer_data> transfers);
+	void trns(const name& account, const int64_t& old_balance, const eosio::symbol_code old_balance_symbol_code, const int64_t& need_base_token, const name& amount_in_contract, std::vector<transfer_data>& transfers);
          
 	using fee_action = eosio::action_wrapper<"fee"_n, &fees::fee>;
 	using log_action = eosio::action_wrapper<"log"_n, &fees::log>;
