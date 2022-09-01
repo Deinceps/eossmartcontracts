@@ -57,7 +57,7 @@ namespace eosio {
 		//auto balance = itr->balance;
 		//eosio::check(balance.amount >= quantity.amount, "minimum not reached");
 	}
-	void fees::execute(const name& account, const asset& amount_in, const int64_t& min_profit, std::vector<transfer_data> transfers)
+	void fees::execute(const name& account, const asset& amount_in, const int64_t& min_profit, std::vector<transfer_data>& transfers)
 	{
 		auto transfer = std::move(transfers.front());
         transfers.erase(transfers.begin());
@@ -91,7 +91,7 @@ namespace eosio {
 		).send();
 		
 	}
-	void fees::trns(const name& account, const int64_t& old_balance, const eosio::symbol_code old_balance_symbol_code, const int64_t& need_base_token, const name& amount_in_contract, std::vector<transfer_data> transfers)
+	void fees::trns(const name& account, const int64_t& old_balance, const eosio::symbol_code old_balance_symbol_code, const int64_t& need_base_token, const name& amount_in_contract, std::vector<transfer_data>& transfers)
 	{
 		if (transfers.empty())
 		{
@@ -102,7 +102,7 @@ namespace eosio {
 			return;
 		}
 		auto transfer = std::move(transfers.front());
-        transfers.erase(transfers.begin());
+        	transfers.erase(transfers.begin());
 		
 		auto tmp = accounts_table(transfer.contract, account.value);
 		auto itr = tmp.find(old_balance_symbol_code.raw());
