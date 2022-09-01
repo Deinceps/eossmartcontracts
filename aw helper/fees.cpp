@@ -51,11 +51,11 @@ namespace eosio {
   }
 	void fees::check(const name& account, const name& contract, const asset& quantity)
 	{
-		//accounts_table tmp(contract, account.value);
-		//auto itr = tmp.find(quantity.symbol.code().raw());
-		//eosio::check(itr != tmp.end(), "minimum not reached");
-		//auto balance = itr->balance;
-		//eosio::check(balance.amount >= quantity.amount, "minimum not reached");
+		accounts_table tmp(contract, account.value);
+		auto itr = tmp.find(quantity.symbol.code().raw());
+		eosio::check(itr != tmp.end(), "minimum not reached");
+		auto balance = itr->balance;
+		eosio::check(balance.amount >= quantity.amount, "minimum not reached");
 	}
 	void fees::execute(const name& account, const asset& amount_in, const int64_t& min_profit, std::vector<transfer_data>& transfers)
 	{
@@ -63,19 +63,10 @@ namespace eosio {
         transfers.erase(transfers.begin());
 		
 		auto tmp = accounts_table(transfer.contract, account.value);
-		auto itr = tmp.find(amount_in.symbol.code().raw());
+		auto itr = tmp.find(transfer.symbol_code.raw());
 		eosio::check(itr != tmp.end(), "base token not exist");
 		auto balance_init = itr->balance;
-		
-		
-		tmp = accounts_table(transfer.receive_token_contract, account.value);
-		itr = tmp.find(transfer.symbol_code.raw());
-		int64_t receive_token_balance = 0;
-		if (itr != tmp.end())
-		{
-			receive_token_balance = (itr->balance).amount;
-		}
-		
+				
 		action(
 			permission_level{account, "active"_n},
 			transfer.contract,
@@ -83,52 +74,35 @@ namespace eosio {
 			std::make_tuple(account, transfer.receiver, amount_in, transfer.memo)
 		).send();
 		
+		for(const auto& transfer: transfers) 
+		{
+			action(
+				permission_level{account, "active"_n},
+				get_self(),
+				"trns"_n,
+				std::make_tuple(account, transfer)
+			).send();
+		}
+		
+		balance_init.set_amount(balance_init.amount + min_profit);
 		action(
 			permission_level{account, "active"_n},
 			get_self(),
-			"trns"_n,
-			std::make_tuple(account, receive_token_balance, transfer.symbol_code, balance_init.amount + min_profit, transfer.contract, transfers)
+			"check"_n,
+			std::make_tuple(account, transfer.contract, balance_init)
 		).send();
-		
 	}
-	void fees::trns(const name& account, const int64_t& old_balance, const eosio::symbol_code old_balance_symbol_code, const int64_t& need_base_token, const name& amount_in_contract, std::vector<transfer_data>& transfers)
-	{
-		if (transfers.empty())
-		{
-			auto base_tmp = accounts_table(amount_in_contract, account.value);
-			auto base_itr = base_tmp.find(old_balance_symbol_code.raw());
-			auto base_balance = base_itr->balance;
-			eosio::check(base_balance.amount >= need_base_token, "minimum not reached");
-			return;
-		}
-		auto transfer = std::move(transfers.front());
-        	transfers.erase(transfers.begin());
-		
+	void fees::trns(const name& account, transfer_data& transfer)
+	{		
 		auto tmp = accounts_table(transfer.contract, account.value);
-		auto itr = tmp.find(old_balance_symbol_code.raw());
+		auto itr = tmp.find(transfer.symbol_code.raw());
 		auto balance = itr->balance;
-		balance.set_amount(balance.amount - old_balance);
 		
 		action(
 			permission_level{account, "active"_n},
 			transfer.contract,
 			"transfer"_n,
 			std::make_tuple(account, transfer.receiver, balance, transfer.memo)
-		).send();
-		
-		tmp = accounts_table(transfer.receive_token_contract, account.value);
-		itr = tmp.find(transfer.symbol_code.raw());
-		int64_t receive_token_balance = 0;
-		if (itr != tmp.end())
-		{
-			receive_token_balance = (itr->balance).amount;
-		}
-		
-		action(
-			permission_level{account, "active"_n},
-			get_self(),
-			"trns"_n,
-			std::make_tuple(account, receive_token_balance, transfer.symbol_code, need_base_token, amount_in_contract, transfers)
 		).send();
 	}
 }
