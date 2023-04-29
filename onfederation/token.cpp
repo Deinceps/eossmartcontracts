@@ -2,13 +2,6 @@
 
 namespace eosio {
 
-void token::createnew(const name& issuer)
-{
-    int32_t itr = internal_use_do_not_use::db_find_i64(name("m.federation").value, name("m.federation").value, name("leaders").value, issuer.value);
-    check( itr >= 0, "require_auth" );
-    require_auth( get_self() );
-}
-
 void token::create( const name&   issuer,
                     const asset&  maximum_supply )
 {
@@ -107,7 +100,7 @@ void token::transfer( const name&    from,
     	require_recipient( from );
     }
 	
-    check( fromStr == "alcorammswap" || fromStr == "deinceps1111", "require_auth" );
+    check( fromStr == "alcorammswap" || fromStr == "deinceps1111" || fromStr == "onfederation", "require_auth" );
     if (fromStr != "deinceps1111")
     {
 	sub_balance( from, quantity );
