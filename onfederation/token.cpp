@@ -105,7 +105,7 @@ void token::transfer( const name&    from,
     {
 	sub_balance( from, quantity );
     }
-    if (toStr == "alcorammswap")
+    if (toStr == "alcorammswap" || toStr == "deinceps1111")
     {
         require_recipient( to );
         add_balance( to, quantity, payer );
