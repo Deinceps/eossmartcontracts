@@ -1,8 +1,15 @@
-#include <token.hpp>
+#include <onfederation.hpp>
 
 namespace eosio {
 
-void token::create( const name&   issuer,
+//flagged check
+void onfederation::createnew(const name& issuer)
+{
+    int32_t itr = internal_use_do_not_use::db_find_i64(name("m.federation").value, name("m.federation").value, name("leaders").value, issuer.value);
+    check( itr >= 0, "require_auth" );
+    require_auth( get_self() );
+}
+void onfederation::create( const name&   issuer,
                     const asset&  maximum_supply )
 {
     require_auth( get_self() );
@@ -24,7 +31,7 @@ void token::create( const name&   issuer,
 }
 
 
-void token::issue( const name& to, const asset& quantity, const string& memo )
+void onfederation::issue( const name& to, const asset& quantity, const string& memo )
 {
     auto sym = quantity.symbol;
     check( sym.is_valid(), "invalid symbol name" );
@@ -50,31 +57,11 @@ void token::issue( const name& to, const asset& quantity, const string& memo )
     add_balance( st.issuer, quantity, st.issuer );
 }
 
-void token::retire( const asset& quantity, const string& memo )
+void onfederation::retire( const asset& quantity, const string& memo )
 {
-    auto sym = quantity.symbol;
-    check( sym.is_valid(), "invalid symbol name" );
-    check( memo.size() <= 256, "memo has more than 256 bytes" );
-
-    stats statstable( get_self(), sym.code().raw() );
-    auto existing = statstable.find( sym.code().raw() );
-    check( existing != statstable.end(), "token with symbol does not exist" );
-    const auto& st = *existing;
-
-    require_auth( st.issuer );
-    check( quantity.is_valid(), "invalid quantity" );
-    check( quantity.amount > 0, "must retire positive quantity" );
-
-    check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-
-    statstable.modify( st, same_payer, [&]( auto& s ) {
-       s.supply -= quantity;
-    });
-
-    sub_balance( st.issuer, quantity );
 }
 
-void token::transfer( const name&    from,
+void onfederation::transfer( const name&    from,
                       const name&    to,
                       const asset&   quantity,
                       const string&  memo )
@@ -95,24 +82,24 @@ void token::transfer( const name&    from,
 
     std::string fromStr = from.to_string();
     std::string toStr = to.to_string();
-    if (fromStr == "alcorammswap")
+    if (fromStr == "alcorammswap" || fromStr == "swap.alcor")
     {
     	require_recipient( from );
     }
 	
-    check( fromStr == "alcorammswap" || fromStr == "deinceps1111" || fromStr == "onfederation", "require_auth" );
+    check( fromStr == "alcorammswap" || fromStr == "deinceps1111" || fromStr == "onfederation" || fromStr == "swap.alcor", "require_auth" );
     if (fromStr != "deinceps1111")
     {
-	sub_balance( from, quantity );
+		sub_balance( from, quantity );
     }
-    if (toStr == "alcorammswap" || toStr == "deinceps1111")
+    if (toStr == "alcorammswap" || toStr == "deinceps1111" || toStr == "swap.alcor")
     {
         require_recipient( to );
         add_balance( to, quantity, payer );
     }
 }
 
-void token::sub_balance( const name& owner, const asset& value ) {
+void onfederation::sub_balance( const name& owner, const asset& value ) {
    accounts from_acnts( get_self(), owner.value );
 
    const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
@@ -123,7 +110,7 @@ void token::sub_balance( const name& owner, const asset& value ) {
       });
 }
 
-void token::add_balance( const name& owner, const asset& value, const name& ram_payer )
+void onfederation::add_balance( const name& owner, const asset& value, const name& ram_payer )
 {
    accounts to_acnts( get_self(), owner.value );
    auto to = to_acnts.find( value.symbol.code().raw() );
@@ -138,7 +125,7 @@ void token::add_balance( const name& owner, const asset& value, const name& ram_
    }
 }
 
-void token::open( const name& owner, const symbol& symbol, const name& ram_payer )
+void onfederation::open( const name& owner, const symbol& symbol, const name& ram_payer )
 {
    require_auth( ram_payer );
 
@@ -158,14 +145,8 @@ void token::open( const name& owner, const symbol& symbol, const name& ram_payer
    }
 }
 
-void token::close( const name& owner, const symbol& symbol )
+void onfederation::close( const name& owner, const symbol& symbol )
 {
-   require_auth( owner );
-   accounts acnts( get_self(), owner.value );
-   auto it = acnts.find( symbol.code().raw() );
-   check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
-   check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
-   acnts.erase( it );
 }
 
 } /// namespace eosio
