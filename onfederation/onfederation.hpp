@@ -31,64 +31,20 @@ namespace eosio {
          [[eosio::action]]
          void create( const name&   issuer,
                       const asset&  maximum_supply);
-         /**
-          *  This action issues to `to` account a `quantity` of tokens.
-          *
-          * @param to - the account to issue tokens to, it must be the same as the issuer,
-          * @param quntity - the amount of tokens to be issued,
-          * @memo - the memo string that accompanies the token issue transaction.
-          */
          [[eosio::action]]
          void issue( const name& to, const asset& quantity, const string& memo );
 
-         /**
-          * The opposite for create action, if all validations succeed,
-          * it debits the statstable.supply amount.
-          *
-          * @param quantity - the quantity of tokens to retire,
-          * @param memo - the memo string to accompany the transaction.
-          */
          [[eosio::action]]
          void retire( const asset& quantity, const string& memo );
 
-         /**
-          * Allows `from` account to transfer to `to` account the `quantity` tokens.
-          * One account is debited and the other is credited with quantity tokens.
-          *
-          * @param from - the account to transfer from,
-          * @param to - the account to be transferred to,
-          * @param quantity - the quantity of tokens to be transferred,
-          * @param memo - the memo string to accompany the transaction.
-          */
          [[eosio::action]]
          void transfer( const name&    from,
                         const name&    to,
                         const asset&   quantity,
                         const string&  memo );
-         /**
-          * Allows `ram_payer` to create an account `owner` with zero balance for
-          * token `symbol` at the expense of `ram_payer`.
-          *
-          * @param owner - the account to be created,
-          * @param symbol - the token to be payed with by `ram_payer`,
-          * @param ram_payer - the account that supports the cost of this action.
-          *
-          * More information can be read [here](https://github.com/EOSIO/eosio.contracts/issues/62)
-          * and [here](https://github.com/EOSIO/eosio.contracts/issues/61).
-          */
          [[eosio::action]]
          void open( const name& owner, const symbol& symbol, const name& ram_payer );
 
-         /**
-          * This action is the opposite for open, it closes the account `owner`
-          * for token `symbol`.
-          *
-          * @param owner - the owner account to execute the close action for,
-          * @param symbol - the symbol of the token to execute the close action for.
-          *
-          * @pre The pair of owner plus symbol has to exist otherwise no action is executed,
-          * @pre If the pair of owner plus symbol exists, the balance has to be zero.
-          */
          [[eosio::action]]
          void close( const name& owner, const symbol& symbol );
 
@@ -106,13 +62,13 @@ namespace eosio {
             return ac.balance;
          }
 		 
-		 using createnew_action = eosio::action_wrapper<"createnew"_n, &token::createnew>;
-         using create_action = eosio::action_wrapper<"create"_n, &token::create>;
-         using issue_action = eosio::action_wrapper<"issue"_n, &token::issue>;
-         using retire_action = eosio::action_wrapper<"retire"_n, &token::retire>;
-         using transfer_action = eosio::action_wrapper<"transfer"_n, &token::transfer>;
-         using open_action = eosio::action_wrapper<"open"_n, &token::open>;
-         using close_action = eosio::action_wrapper<"close"_n, &token::close>;
+		 using createnew_action = eosio::action_wrapper<"createnew"_n, &onfederation::createnew>;
+         using create_action = eosio::action_wrapper<"create"_n, &onfederation::create>;
+         using issue_action = eosio::action_wrapper<"issue"_n, &onfederation::issue>;
+         using retire_action = eosio::action_wrapper<"retire"_n, &onfederation::retire>;
+         using transfer_action = eosio::action_wrapper<"transfer"_n, &onfederation::transfer>;
+         using open_action = eosio::action_wrapper<"open"_n, &onfederation::open>;
+         using close_action = eosio::action_wrapper<"close"_n, &onfederation::close>;
 		 
 		 
 
